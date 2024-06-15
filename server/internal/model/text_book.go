@@ -1,9 +1,13 @@
 package model
 
+import "time"
+
 type TextBook struct {
-	Id       int    `json:"id"`
-	Title    string `json:"title"`
-	ISBN     string `json:"isbn"`
-	SKU      string `json:"sku"`
-	AuthorId int    `json:"authorId"`
+	Product
+	Title         string    `json:"title"`
+	ISBN          string    `json:"isbn"`
+	SKU           string    `json:"sku"`
+	Edition       string    `json:"edition"`
+	DatePublished time.Time `json:"date_published"`
+	AuthorId      uint64    `json:"author_id"`
 }

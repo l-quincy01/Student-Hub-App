@@ -1,34 +1,29 @@
 package model
 
 type User struct {
-	Id                  int         `json:"id"`
-	FirstName           string      `json:"firstName"`
-	LastName            string      `json:"lastName"`
-	PhoneNumber         PhoneNumber `json:"phoneNumber"`
-	PhysicalAddress     Address     `json:"physicalAddress"`
-	PostalAddress       Address     `json:"postalAddress"`
-	IsPostalAddressSame bool        `json:"isPostalAddressSame"`
+	Id                  uint64      `json:"id"`
+	FirstName           string      `json:"first_name"`
+	LastName            string      `json:"last_name"`
+	PhoneNumber         PhoneNumber `json:"phone_number"`
+	PhysicalAddress     Address     `json:"physical_address"`
+	PostalAddress       Address     `json:"postal_address"`
+	IsPostalAddressSame bool        `json:"is_postal_address_same"`
 }
 
 type Address struct {
-	StreetName   string `json:"streetName"`
-	AddressLine1 string `json:"addressLine1"`
-	AddressLine2 string `json:"addressLine2"`
+	StreetName   string `json:"street_name"`
+	AddressLine1 string `json:"address_line1"`
+	AddressLine2 string `json:"address_line2"`
 	City         string `json:"city"`
 	Country      string `json:"country"`
 	Province     string `json:"provice"`
-	PostalCode   string `json:"postalCode"`
+	PostalCode   string `json:"postal_code"`
 }
 
-type PhoneNumber struct {
-	Code   CountryCode `json:"code"`
-	Digits string      `json:"digits"`
-}
-
-func (user User) CollectionName() string {
+func (u User) CollectionName() string {
 	return "user_collection"
 }
 
-func (profile User) IsSouthAfricanPhoneNumber() bool {
-	return profile.PhoneNumber.Code == ZA
+func (u User) IsSouthAfricanPhoneNumber() bool {
+	return u.PhoneNumber.Code == ZA
 }
