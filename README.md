@@ -15,4 +15,4 @@ A community marketplace for college and university students to buy and sell seco
 ## Screenshots
 
 <div style="display:flex;" >
-<img src="/screenshots/1a.png" width="50%" >
+<img src="/Screenshots/1a.png" width="50%" >
