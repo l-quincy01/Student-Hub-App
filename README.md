@@ -6,9 +6,9 @@ A community marketplace for college and university students to buy and sell seco
 
 ## Tech Stack
 
-**Client:** ReactJS, TailwindCSS
+**Client:** React Native, TailwindCSS
 
-**Backend:** GO,
+**Backend:** GO
 
 **Database:** Firebase
 
