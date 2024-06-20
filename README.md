@@ -1,2 +1,18 @@
 # Student-Hub-App
+
 Student-Hub-App
+
+A community marketplace for college and university students to buy and sell second-hand goods, fostering a sustainable and affordable exchange of textbooks, furniture, electronics, and other essentials within the student community.
+
+## Tech Stack
+
+**Client:** ReactJS, TailwindCSS
+
+**Backend:** GO,
+
+**Database:** Firebase
+
+## Screenshots
+
+<div style="display:flex;" >
+<img src="/screenshots/1a.png" width="50%" >
