@@ -1,6 +1,7 @@
 package model
 
 type Author struct {
-	Id       string `json:"id"`
-	FullName string
+	DocumentBase
+	FullName  string     `bson:"full_name" json:"full_name"`
+	TextBooks []TextBook `bson:"text_books" json:"text_books"`
 }

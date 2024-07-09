@@ -1,29 +1,25 @@
 package model
 
 type User struct {
-	Id                  uint64      `json:"id"`
-	FirstName           string      `json:"first_name"`
-	LastName            string      `json:"last_name"`
-	PhoneNumber         PhoneNumber `json:"phone_number"`
-	PhysicalAddress     Address     `json:"physical_address"`
-	PostalAddress       Address     `json:"postal_address"`
-	IsPostalAddressSame bool        `json:"is_postal_address_same"`
+	DocumentBase
+	FirstName           string      `bson:"first_name" json:"first_name"`
+	LastName            string      `bson:"last_name" json:"last_name"`
+	PhoneNumber         PhoneNumber `bson:"phone_number" json:"phone_number"`
+	PhysicalAddress     Address     `bson:"physical_address" json:"physical_address"`
+	PostalAddress       Address     `bson:"postal_address" json:"postal_address"`
+	IsPostalAddressSame bool        `bson:"is_postal_address_same" json:"is_postal_address_same"`
 }
 
 type Address struct {
-	StreetName   string `json:"street_name"`
-	AddressLine1 string `json:"address_line1"`
-	AddressLine2 string `json:"address_line2"`
-	City         string `json:"city"`
-	Country      string `json:"country"`
-	Province     string `json:"provice"`
-	PostalCode   string `json:"postal_code"`
+	StreetName   string `bson:"street_name" json:"street_name"`
+	AddressLine1 string `bson:"address_line1" json:"address_line1"`
+	AddressLine2 string `bson:"address_line2" json:"address_line2"`
+	City         string `bson:"city" json:"city"`
+	Country      string `bson:"country" json:"country"`
+	Province     string `bson:"provice" json:"provice"`
+	PostalCode   string `bson:"postal_code" json:"postal_code"`
 }
 
 func (u User) CollectionName() string {
 	return "user_collection"
-}
-
-func (u User) IsSouthAfricanPhoneNumber() bool {
-	return u.PhoneNumber.Code == ZA
 }

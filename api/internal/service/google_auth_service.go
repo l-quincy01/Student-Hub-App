@@ -21,13 +21,13 @@ func NewGoogleAuthService(conf *oauth2.Config) GoogleAuthService {
 	}
 }
 
-func (g *GoogleAuthService) ConsentRedirectUrl() string {
+func (g *GoogleAuthService) GetAuthCodeUrl() string {
 	url := g.conf.AuthCodeURL("state")
 
 	return url
 }
 
-func (g *GoogleAuthService) TokenExchange(state string, code string) (string, error) {
+func (g *GoogleAuthService) GetAccessToken(state string, code string) (string, model.ApiError) {
 	if state != "state" {
 		return "", model.UnathorizedError{Err: errors.New("state codes do not match")}
 	}
@@ -40,23 +40,21 @@ func (g *GoogleAuthService) TokenExchange(state string, code string) (string, er
 	return token.AccessToken, nil
 }
 
-func (g *GoogleAuthService) GetUserData(token string) (string, error) {
-	userInfoUrl := fmt.Sprintf("https://www.googleapis.com/oauth2/v2/userinfo?access_token=%s", token)
-
-	resp, err := http.Get(userInfoUrl)
+func (g *GoogleAuthService) GetUserInfo(accessToken string) (any, model.ApiError) {
+	res, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v2/userinfo?access_token=%s", accessToken))
 	if err != nil {
 		return "", model.BadRequestError{Err: errors.New("unable to retrieve user data")}
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if res.StatusCode != http.StatusOK {
 		return "", model.InternalServerError{Err: errors.New("unable to process request to retrieve user data")}
 	}
 
-	var userData string
-	err = json.NewDecoder(resp.Body).Decode(&userData)
+	var userInfo any
+	err = json.NewDecoder(res.Body).Decode(&userInfo)
 	if err != nil {
 		return "", model.InternalServerError{Err: fmt.Errorf("unable to unmarshal user data from response. err: %v", err)}
 	}
 
-	return userData, nil
+	return userInfo, nil
 }

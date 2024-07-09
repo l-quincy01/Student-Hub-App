@@ -1,2 +1,2 @@
-build:
+wire:
 	wire ./internal/dependecy

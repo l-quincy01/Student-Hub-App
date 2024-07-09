@@ -28,7 +28,7 @@ func main() {
 	googleAuthService := service.NewGoogleAuthService(conf)
 	authController := controller.NewAuthController(googleAuthService)
 
-	authController.Route(app)
+	authController.SetupRoutes(app)
 
 	port := os.Getenv("PORT")
 

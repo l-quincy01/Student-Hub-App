@@ -1,6 +1,13 @@
 package service
 
 type UserService interface {
-	Get()
+	Get() 
 	Create()
+	Update()
+	Delete()
 }
+
+type UserServiceImpl struct {
+
+}
+

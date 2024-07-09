@@ -6,11 +6,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-const (
-	GoogleCallbackUrl = "/google_callback"
-	GoogleLogin       = "/google_login"
-)
-
 type AuthController struct {
 	googleAuthService service.GoogleAuthService
 }
@@ -21,9 +16,12 @@ func NewAuthController(googleAuthService service.GoogleAuthService) AuthControll
 	}
 }
 
-func (a *AuthController) Route(app *fiber.App) {
-	app.Get(GoogleLogin, a.googleLoginHandler)
-	app.Get(GoogleCallbackUrl, a.googleCallbackHandler)
+func (a *AuthController) SetupRoutes(app *fiber.App) {
+	group := app.Group(AuthBaseURL)
+	{
+		group.Get(AuthGoogleCallbackURL, a.googleCallbackHandler)
+		group.Get(AuthGoogleLoginURL, a.googleLoginHandler)
+	}
 }
 
 func (a *AuthController) googleCallbackHandler(ctx *fiber.Ctx) error {
@@ -31,20 +29,27 @@ func (a *AuthController) googleCallbackHandler(ctx *fiber.Ctx) error {
 
 	code := ctx.Query("code")
 
-	token, err := a.googleAuthService.TokenExchange(state, code)
+	accessToken, err := a.googleAuthService.GetAccessToken(state, code)
 	if err != nil {
-		ctx.Status(500)
+		ctx.Status(err.GetStatus())
+
+		return err
+	}
+
+	data, err := a.googleAuthService.GetUserInfo(accessToken)
+	if err != nil {
+		ctx.Status(err.GetStatus())
 
 		return err
 	}
 
 	return ctx.JSON(map[string]any{
-		"access_token": token,
+		"data": data,
 	})
 }
 
 func (a *AuthController) googleLoginHandler(ctx *fiber.Ctx) error {
-	url := a.googleAuthService.ConsentRedirectUrl()
+	url := a.googleAuthService.GetAuthCodeUrl()
 
 	ctx.Status(fiber.StatusSeeOther)
 
