@@ -15,8 +15,5 @@ const (
 )
 
 func (u UserController) Router(app *fiber.App) {
-	// group := app.Group(baseURL)
-	// {
-
-	// }
+// TODO: populate routes
 }
