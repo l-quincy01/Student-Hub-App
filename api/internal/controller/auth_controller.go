@@ -7,21 +7,37 @@ import (
 )
 
 type AuthController struct {
-	googleAuthService service.GoogleAuthService
+	oauthService service.OAuthService
 }
 
-func NewAuthController(googleAuthService service.GoogleAuthService) AuthController {
+func NewOAuthController(googleAuthService service.OAuthService) AuthController {
 	return AuthController{
 		googleAuthService,
 	}
 }
 
-func (a *AuthController) SetupRoutes(app *fiber.App) {
-	group := app.Group(AuthBaseURL)
+const (
+	baseURL               = "/auth"
+	AuthGoogleCallbackURL = "/google_callback"
+	AuthGoogleLoginURL    = "/google_login"
+)
+
+func (a *AuthController) Router(app *fiber.App) {
+	group := app.Group(baseURL)
 	{
-		group.Get(AuthGoogleCallbackURL, a.googleCallbackHandler)
 		group.Get(AuthGoogleLoginURL, a.googleLoginHandler)
+		group.Get(AuthGoogleCallbackURL, a.googleCallbackHandler)
 	}
+}
+
+func (a *AuthController) googleLoginHandler(ctx *fiber.Ctx) error {
+	url := a.oauthService.GetAuthCodeUrl()
+
+	ctx.Status(fiber.StatusSeeOther)
+
+	ctx.Redirect(url)
+
+	return ctx.JSON(url)
 }
 
 func (a *AuthController) googleCallbackHandler(ctx *fiber.Ctx) error {
@@ -29,16 +45,16 @@ func (a *AuthController) googleCallbackHandler(ctx *fiber.Ctx) error {
 
 	code := ctx.Query("code")
 
-	accessToken, err := a.googleAuthService.GetAccessToken(state, code)
+	accessToken, err := a.oauthService.GetAccessToken(state, code)
 	if err != nil {
-		ctx.Status(err.GetStatus())
+		ctx.Status(err.StatusCode())
 
 		return err
 	}
 
-	data, err := a.googleAuthService.GetUserInfo(accessToken)
+	data, err := a.oauthService.GetUserInfo(accessToken)
 	if err != nil {
-		ctx.Status(err.GetStatus())
+		ctx.Status(err.StatusCode())
 
 		return err
 	}
@@ -46,14 +62,4 @@ func (a *AuthController) googleCallbackHandler(ctx *fiber.Ctx) error {
 	return ctx.JSON(map[string]any{
 		"data": data,
 	})
-}
-
-func (a *AuthController) googleLoginHandler(ctx *fiber.Ctx) error {
-	url := a.googleAuthService.GetAuthCodeUrl()
-
-	ctx.Status(fiber.StatusSeeOther)
-
-	ctx.Redirect(url)
-
-	return ctx.JSON(url)
 }

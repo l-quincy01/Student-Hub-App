@@ -9,13 +9,13 @@ import (
 )
 
 const (
-	MongoDbUrl = "MONGODB_URL"
+	mongodbUrl = "MONGODB_URL"
 )
 
-func SetupMongoDb(ctx context.Context) *mongo.Client {
+func ConnectMongodb(ctx context.Context) *mongo.Client {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().
-		ApplyURI(os.Getenv(MongoDbUrl)).
+		ApplyURI(os.Getenv(mongodbUrl)).
 		SetServerAPIOptions(serverAPI)
 
 	client, err := mongo.Connect(ctx, opts)
@@ -26,7 +26,7 @@ func SetupMongoDb(ctx context.Context) *mongo.Client {
 	return client
 }
 
-func CloseMognoDb(ctx context.Context, client *mongo.Client) {
+func DisconnectMongodb(ctx context.Context, client *mongo.Client) {
 	err := client.Disconnect(ctx)
 	if err != nil {
 		panic(err)

@@ -1,22 +1,14 @@
-## Setup Environment
+## Getting Started
 
-### 1. Configure dependecies
-Install the `wire` package tool:
-```bash
-go install wire@latest
-```
+#### 1. Configure Golang
+[Download and install Go](https://go.dev/doc/install)
 
-***Note**
-For macOS please add the following to your .zshrc
+**Note**:
+For Mac silicon chip add the following to your `.zshrc` file
 ```
 export GOPATH="$HOME/go"
 PATH="$GOPATH/bin:$PATH"
 ```
 
-To configure the `api` dependecies run the following make command:
-```bash
-make wire
-```
-
-### 2. Run Mongodb Container
-
+#### 2. Run the API
+Open vscode, select **Run and Debug** and run `student-hub-api`

@@ -15,7 +15,3 @@ type TextBook struct {
 	DatePublished time.Time          `bson:"date_published" json:"date_published"`
 	AuthorID      primitive.ObjectID `bson:"author_id" json:"author_id"`
 }
-
-func (t TextBook) CollectionName() string {
-	return "text_book_collection"
-}

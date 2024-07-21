@@ -1,7 +1,7 @@
 package model
 
 type User struct {
-	DocumentBase
+	Document
 	FirstName           string      `bson:"first_name" json:"first_name"`
 	LastName            string      `bson:"last_name" json:"last_name"`
 	PhoneNumber         PhoneNumber `bson:"phone_number" json:"phone_number"`
@@ -20,6 +20,3 @@ type Address struct {
 	PostalCode   string `bson:"postal_code" json:"postal_code"`
 }
 
-func (u User) CollectionName() string {
-	return "user_collection"
-}

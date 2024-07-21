@@ -1,12 +1,8 @@
 package model
 
 type Product struct {
-	DocumentBase
+	Document
 	Price       float32 `bson:"price" json:"price"`
 	Title       string  `bson:"price" json:"title"`
 	Description string  `bson:"description" json:"description"`
-}
-
-func (p Product) CollectionName() string {
-	return "product_collection"
 }

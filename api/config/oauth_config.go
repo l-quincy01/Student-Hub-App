@@ -11,16 +11,16 @@ import (
 )
 
 const (
-	GoogleClientId     = "GOOGLE_CLIENT_ID"
-	GoogleClientSecret = "GOOGLE_CLIENT_SECRET"
+	googleClientId     = "GOOGLE_CLIENT_ID"
+	googleClientSecret = "GOOGLE_CLIENT_SECRET"
 )
 
 func SetupGoogleOauth(ctx context.Context) *oauth2.Config {
 	redirectUrl := fmt.Sprintf("%s%s", os.Getenv("BASE_URL"), controller.AuthGoogleCallbackURL)
 
-	conf := &oauth2.Config{
-		ClientID:     os.Getenv(GoogleClientId),
-		ClientSecret: os.Getenv(GoogleClientSecret),
+	cfg := &oauth2.Config{
+		ClientID:     os.Getenv(googleClientId),
+		ClientSecret: os.Getenv(googleClientSecret),
 		RedirectURL:  redirectUrl,
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email",
@@ -29,5 +29,5 @@ func SetupGoogleOauth(ctx context.Context) *oauth2.Config {
 		Endpoint: google.Endpoint,
 	}
 
-	return conf
+	return cfg
 }
