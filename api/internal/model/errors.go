@@ -6,8 +6,8 @@ import (
 )
 
 type ApiError interface {
-	StatusCode() int
 	Error() string
+	StatusCode() int
 }
 
 type InternalServerError struct {
@@ -43,5 +43,5 @@ func (b BadRequestError) Error() string {
 }
 
 func (b BadRequestError) StatusCode() int {
-	return http.StatusInternalServerError
+	return http.StatusBadRequest
 }
