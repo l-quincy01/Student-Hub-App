@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	config.SetupEnv()
+	config.LoadEnv()
 }
 
 func main() {
