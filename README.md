@@ -21,13 +21,9 @@ Student Hub is a community marketplace for college and university students to bu
 ### Tech Stack
 
 
-**Front end** - React Native
-
-**Back end** - Go
-
-**Database** - MongoDB
-
-**BaaS** - Firebase
+| **Front-End**  | **Back-End** | **Database** | **BaaS** |
+|--------|--------|--------|--------|
+| React Native | Go | MongoDB | Firebase | 
 
 ### Screenshots
 
