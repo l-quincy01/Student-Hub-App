@@ -8,7 +8,7 @@ import (
 )
 
 func LoadEnv() {
-	err := godotenv.Load(filepath.Join("..", "..", "env"))
+	err := godotenv.Load(filepath.Join("..", "..", ".env"))
 	if err != nil {
 		log.Fatal("error loading enviornment variables:", err)
 	}
