@@ -1,9 +1,13 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Order struct {
-	Id            uint64    `json:"id"`
-	UserId        uint64    `json:"user_id"`
-	DatePurchased time.Time `json:"date"`
+	Document
+	UserID        primitive.ObjectID `bson:"user_id" json:"user_id"`
+	PurchasedDate time.Time          `bson:"purchased_date" json:"purchased_date"`
 }

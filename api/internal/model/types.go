@@ -13,6 +13,9 @@ type PhoneNumber struct {
 	Digits string
 }
 
-func (pn PhoneNumber) String() string {
-	return fmt.Sprintf("%s%s", pn.Code, pn.Digits)
+func (p PhoneNumber) String() string {
+	return fmt.Sprintf("%s%s", p.Code, p.Digits)
+}
+func (p PhoneNumber) IsSouthAfricanPhoneNumber() bool {
+	return p.Code == ZA
 }

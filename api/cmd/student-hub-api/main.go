@@ -12,26 +12,23 @@ import (
 )
 
 func init() {
-	config.SetupEnv()
+	config.LoadEnv()
 }
 
 func main() {
 	ctx := context.Background()
-
-	client := config.SetupMongoDb(ctx)
-	defer config.CloseMognoDb(ctx, client)
-
-	conf := config.SetupGoogleOauth(ctx)
-
 	app := fiber.New()
 
-	googleAuthService := service.NewGoogleAuthService(conf)
-	authController := controller.NewAuthController(googleAuthService)
+	client := config.ConnectMongodb(ctx)
+	defer config.DisconnectMongodb(ctx, client)
 
-	authController.Route(app)
-
-	port := os.Getenv("PORT")
+	cfg := config.SetupGoogleOauth(ctx)
+	oauthService := service.NewOAuthService(cfg)
+	authController := controller.NewOAuthController(oauthService)
+	authController.Router(app)
 
 	app.Use(logger.New())
+
+	port := os.Getenv("PORT")
 	app.Listen(port)
 }
