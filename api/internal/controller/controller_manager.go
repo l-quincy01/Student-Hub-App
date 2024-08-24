@@ -2,7 +2,6 @@ package controller
 
 import "github.com/gofiber/fiber/v2"
 
-type Controller interface {
+type ControllerManager interface {
 	Router(app *fiber.App)
 }
-
