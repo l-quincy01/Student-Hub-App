@@ -4,6 +4,7 @@ type User struct {
 	Document
 	FirstName           string      `bson:"first_name" json:"first_name"`
 	LastName            string      `bson:"last_name" json:"last_name"`
+	Email               string      `bson:"email" json:"email"`
 	PhoneNumber         PhoneNumber `bson:"phone_number" json:"phone_number"`
 	PhysicalAddress     Address     `bson:"physical_address" json:"physical_address"`
 	PostalAddress       Address     `bson:"postal_address" json:"postal_address"`
@@ -19,4 +20,3 @@ type Address struct {
 	Province     string `bson:"provice" json:"provice"`
 	PostalCode   string `bson:"postal_code" json:"postal_code"`
 }
-
