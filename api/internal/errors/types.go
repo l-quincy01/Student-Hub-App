@@ -1,4 +1,4 @@
-package model
+package errors
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ type InternalServerError struct {
 }
 
 func (i InternalServerError) Error() string {
-	return fmt.Sprintf("An unexpected error occured. status: %d, err: %v", http.StatusInternalServerError, i.Err)
+	return fmt.Sprintf("An unexpected error occured. status: %d, err: %v", i.StatusCode(), i.Err)
 }
 
 func (i InternalServerError) StatusCode() int {
@@ -27,7 +27,7 @@ type UnathorizedError struct {
 }
 
 func (u UnathorizedError) Error() string {
-	return fmt.Sprintf("Not authorized to perform operation. status: %d, err: %v", http.StatusUnauthorized, u.Err)
+	return fmt.Sprintf("Not authorized to perform operation. status: %d, err: %v", u.StatusCode(), u.Err)
 }
 
 func (u UnathorizedError) StatusCode() int {
@@ -39,7 +39,7 @@ type BadRequestError struct {
 }
 
 func (b BadRequestError) Error() string {
-	return fmt.Sprintf("Unable to process the operation. status: %d, err: %v", http.StatusBadRequest, b.Err)
+	return fmt.Sprintf("Unable to process the operation. status: %d, err: %v", b.StatusCode(), b.Err)
 }
 
 func (b BadRequestError) StatusCode() int {
