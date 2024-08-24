@@ -1,5 +1,4 @@
 # Default ignored files
-.env
 /shelf/
 /workspace.xml
 # Editor-based HTTP Client requests
@@ -15,3 +14,6 @@ __*
 client-secret.json
 
 service-account.json
+
+# local env files
+.env*.local
