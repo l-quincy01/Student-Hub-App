@@ -4,7 +4,9 @@ import (
 	"context"
 	"os"
 	"student-hub-app/config"
+	"student-hub-app/db"
 	"student-hub-app/internal/controller"
+	"student-hub-app/internal/repository"
 	"student-hub-app/internal/service"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,12 +21,20 @@ func main() {
 	ctx := context.Background()
 	app := fiber.New()
 
-	client := config.ConnectMongodb(ctx)
-	defer config.DisconnectMongodb(ctx, client)
+	database := db.NewMongoDB()
+	if err := database.Connect(ctx); err != nil {
+		panic(err)
+	}
+
+	defer database.Disconnect(ctx)
+
+	userManager := repository.NewUserManager(database)
+	userCreator := service.NewUserCreator(userManager)
 
 	cfg := config.SetupGoogleOauth(ctx)
 	oauthService := service.NewOAuthService(cfg)
-	authController := controller.NewOAuthController(oauthService)
+
+	authController := controller.NewAuthController(oauthService, userCreator)
 	authController.Router(app)
 
 	app.Use(logger.New())
