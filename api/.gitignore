@@ -16,4 +16,4 @@ client-secret.json
 service-account.json
 
 # local env files
-.env*.local
+.env
