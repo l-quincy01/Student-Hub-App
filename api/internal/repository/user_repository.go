@@ -1,77 +1,119 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"student-hub-app/db"
 	"student-hub-app/internal/model"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type UserRepository interface {
-	Create(user model.User) error
-	Read(id primitive.ObjectID) (*model.User, error)
-	ReadAll() ([]model.User, error)
-	Update(id primitive.ObjectID, field string, value any) error
-	Delete(id primitive.ObjectID) error
+const usersCollection = "users"
+
+type UserManager interface {
+	Find(ctx context.Context, id primitive.ObjectID) (model.User, error)
+	FindAll(ctx context.Context) ([]model.User, error)
+	Insert(ctx context.Context, user model.User) (*primitive.ObjectID, error)
+	Update(ctx context.Context, id primitive.ObjectID, field string, value any) (*primitive.ObjectID, error)
+	Delete(ctx context.Context, id primitive.ObjectID) error
 }
 
-type UserRepositoryImpl struct {
-	mongodb db.Mongodb[model.User]
+type UserRepository struct {
+	mongoClient *db.MongoDB
 }
 
-const (
-	usersCollection = "users"
-)
+func NewUserManager(mongoClient *db.MongoDB) UserManager {
+	return &UserRepository{
+		mongoClient: mongoClient,
+	}
+}
 
-func (u UserRepositoryImpl) Create(user model.User) error {
-	userID, err := u.mongodb.Insert(usersCollection, user)
+func (u UserRepository) Find(ctx context.Context, id primitive.ObjectID) (model.User, error) {
+	filter := bson.D{{Key: "_id", Value: id}}
+
+	user := new(model.User)
+	err := u.mongoClient.Collection(usersCollection).FindOne(ctx, filter).Decode(user)
 	if err != nil {
-		return err
+		return model.User{}, fmt.Errorf("unable to find document for collection: %s with id: %s %v", usersCollection, id, err)
 	}
 
-	if userID == nil {
-		return fmt.Errorf("unable to create user with object id: %s", user.ID)
-	}
-
-	return nil
+	return *user, nil
 }
 
-func (u UserRepositoryImpl) Read(id primitive.ObjectID) (*model.User, error) {
-	user, err := u.mongodb.Find(usersCollection, id)
+func (u *UserRepository) FindAll(ctx context.Context) ([]model.User, error) {
+	noFilter := bson.D{}
+	cursor, err := u.mongoClient.
+		Collection(usersCollection).
+		Find(ctx, noFilter)
+
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to find documents for collection: %s %v", usersCollection, err)
 	}
 
-	return user, nil
-}
-
-func (u UserRepositoryImpl) ReadAll() ([]model.User, error) {
-	users, err := u.mongodb.FindAll(usersCollection)
+	var users []model.User
+	err = cursor.All(ctx, &users)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to decode items in collection: %s, err:%v", usersCollection, err)
 	}
 
 	return users, nil
 }
 
-func (u UserRepositoryImpl) Update(id primitive.ObjectID, field string, value any) error {
-	userID, err := u.mongodb.Update(usersCollection, id, field, value)
+func (u *UserRepository) Insert(ctx context.Context, user model.User) (*primitive.ObjectID, error) {
+	result, err := u.mongoClient.
+		Collection(usersCollection).
+		InsertOne(ctx, user)
+
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("error occured when attempting to insert record: %v, err: %w", user, err)
 	}
 
-	if userID == nil {
-		return fmt.Errorf("unable to update user with object id: %s", id)
-	}
+	objectID := result.InsertedID.(primitive.ObjectID)
 
-	return nil
+	return &objectID, nil
 }
 
-func (u UserRepositoryImpl) Delete(id primitive.ObjectID) error {
-	err := u.mongodb.Delete(usersCollection, id)
+func (u *UserRepository) Update(ctx context.Context, id primitive.ObjectID, field string, value any) (*primitive.ObjectID, error) {
+	updateFilter := bson.D{
+		{
+			Key: "$set",
+			Value: bson.D{
+				{
+					Key:   field,
+					Value: value,
+				},
+			},
+		},
+	}
+
+	result, err := u.mongoClient.Collection(usersCollection).UpdateByID(ctx, id, updateFilter)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("unable to update document with object id: %s %v", id, err)
+	}
+
+	objectID, err := primitive.ObjectIDFromHex(fmt.Sprint(result.UpsertedID))
+	if err != nil {
+		return nil, fmt.Errorf("error converting upserted id to object id: %v", err)
+	}
+
+	return &objectID, nil
+}
+
+func (u *UserRepository) Delete(ctx context.Context, id primitive.ObjectID) error {
+	idFilter := bson.D{{
+		Key:   "_id",
+		Value: id,
+	}}
+
+	result, err := u.mongoClient.Collection(usersCollection).DeleteOne(ctx, idFilter)
+	if err != nil {
+		return fmt.Errorf("unable to find documents for collection: %s %v", usersCollection, err)
+	}
+
+	if result.DeletedCount == 0 {
+		return fmt.Errorf("no records where found to be deleted with object id: %v", err)
 	}
 
 	return nil
