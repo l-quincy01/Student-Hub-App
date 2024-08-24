@@ -29,3 +29,7 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 node_modules
+
+client-secret.json
+
+service-account.json
