@@ -21,12 +21,12 @@ type UserManager interface {
 }
 
 type UserRepository struct {
-	mongoClient *db.MongoDB
+	mongoDB *db.MongoDB
 }
 
-func NewUserManager(mongoClient *db.MongoDB) UserManager {
+func NewUserManager(mongoDB *db.MongoDB) UserManager {
 	return &UserRepository{
-		mongoClient: mongoClient,
+		mongoDB: mongoDB,
 	}
 }
 
@@ -34,7 +34,7 @@ func (u UserRepository) Find(ctx context.Context, id primitive.ObjectID) (model.
 	filter := bson.D{{Key: "_id", Value: id}}
 
 	user := new(model.User)
-	err := u.mongoClient.Collection(usersCollection).FindOne(ctx, filter).Decode(user)
+	err := u.mongoDB.Collection(usersCollection).FindOne(ctx, filter).Decode(user)
 	if err != nil {
 		return model.User{}, fmt.Errorf("unable to find document for collection: %s with id: %s %v", usersCollection, id, err)
 	}
@@ -44,7 +44,7 @@ func (u UserRepository) Find(ctx context.Context, id primitive.ObjectID) (model.
 
 func (u *UserRepository) FindAll(ctx context.Context) ([]model.User, error) {
 	noFilter := bson.D{}
-	cursor, err := u.mongoClient.
+	cursor, err := u.mongoDB.
 		Collection(usersCollection).
 		Find(ctx, noFilter)
 
@@ -62,7 +62,7 @@ func (u *UserRepository) FindAll(ctx context.Context) ([]model.User, error) {
 }
 
 func (u *UserRepository) Insert(ctx context.Context, user model.User) (*primitive.ObjectID, error) {
-	result, err := u.mongoClient.
+	result, err := u.mongoDB.
 		Collection(usersCollection).
 		InsertOne(ctx, user)
 
@@ -88,15 +88,12 @@ func (u *UserRepository) Update(ctx context.Context, id primitive.ObjectID, fiel
 		},
 	}
 
-	result, err := u.mongoClient.Collection(usersCollection).UpdateByID(ctx, id, updateFilter)
+	result, err := u.mongoDB.Collection(usersCollection).UpdateByID(ctx, id, updateFilter)
 	if err != nil {
 		return nil, fmt.Errorf("unable to update document with object id: %s %v", id, err)
 	}
 
-	objectID, err := primitive.ObjectIDFromHex(fmt.Sprint(result.UpsertedID))
-	if err != nil {
-		return nil, fmt.Errorf("error converting upserted id to object id: %v", err)
-	}
+	objectID := result.UpsertedID.(primitive.ObjectID)
 
 	return &objectID, nil
 }
@@ -107,7 +104,7 @@ func (u *UserRepository) Delete(ctx context.Context, id primitive.ObjectID) erro
 		Value: id,
 	}}
 
-	result, err := u.mongoClient.Collection(usersCollection).DeleteOne(ctx, idFilter)
+	result, err := u.mongoDB.Collection(usersCollection).DeleteOne(ctx, idFilter)
 	if err != nil {
 		return fmt.Errorf("unable to find documents for collection: %s %v", usersCollection, err)
 	}

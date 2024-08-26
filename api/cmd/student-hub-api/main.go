@@ -21,14 +21,14 @@ func main() {
 	ctx := context.Background()
 	app := fiber.New()
 
-	database := db.NewMongoDB()
-	if err := database.Connect(ctx); err != nil {
+	mongoDB := db.NewMongoDB()
+	if err := mongoDB.Connect(ctx); err != nil {
 		panic(err)
 	}
 
-	defer database.Disconnect(ctx)
+	defer mongoDB.Disconnect(ctx)
 
-	userManager := repository.NewUserManager(database)
+	userManager := repository.NewUserManager(mongoDB)
 	userCreator := service.NewUserCreator(userManager)
 
 	cfg := config.SetupGoogleOauth(ctx)
